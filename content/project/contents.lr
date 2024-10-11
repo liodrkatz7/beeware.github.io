@@ -1,19 +1,152 @@
-_model: page
----
-_template: beeware.html
----
-title: BeeWare Project
----
-summary: What is the BeeWare project?
----
-sort_key: 3
----
-gutter:
+# משחק ללימוד אנגלית - אפליקציה ללימוד מילים באנגלית
 
-Meet Brutus
-===========
-.. image:: /static/images/brutus-128.png
+import random
+import getpass
 
-Brutus the Bee is the mascot of the BeeWare project. He's a busy little worker bee.
+# נתוני משתמשים לדוגמה
+users = {
+    "user1": "password1",
+    "user2": "password2"
+}
 
-Fun fact: a person who keeps bees is called an **apiarist** - a name that the BeeWare project uses to describe the core team. This also reflects the relationship that the core team wishes to have with the community - we're shepherds of the community, and we'll provide direction, but we know the real work is done by the community as a whole.
+# רשימת משפטים ומשחקים
+levels = [
+    {
+        "level": 1,
+        "sentences": [
+            ("החתול שלי אוהב לישון על ה___", ["שולחן", "מיטה", "ספר", "דלת"], "מיטה"),
+            ("אני אוהב לקרוא ___ בערב", ["ספר", "כלב", "עץ", "חתול"], "ספר"),
+            # עוד משפטים נוספים עבור הרמה הראשונה
+        ]
+    },
+    {
+        "level": 2,
+        "sentences": [
+            ("יש פרח יפה מאוד בגינה של ה___", ["חתול", "שכן", "דלת", "ספר"], "שכן"),
+            ("הכלב רץ אחרי ה___", ["חבר", "אוטו", "חתול", "מים"], "חתול"),
+            # עוד משפטים נוספים עבור הרמה השנייה
+        ]
+    }
+    # ניתן להוסיף עוד רמות ומשפטים ככול שמתקדמים במשחק
+]
+
+# פונקציות למערכת ההתחברות
+
+def sign_in():
+    username = input("הכנס שם משתמש: ")
+    password = getpass.getpass("הכנס סיסמה: ")
+    if username in users and users[username] == password:
+        print("\nהתחברת בהצלחה!")
+        return username
+    else:
+        print("\nשם משתמש או סיסמה שגויים. אנא נסה שוב.")
+        return None
+
+def sign_up():
+    username = input("בחר שם משתמש: ")
+    if username in users:
+        print("שם המשתמש כבר קיים. אנא בחר שם אחר.")
+        return None
+    password = getpass.getpass("בחר סיסמה: ")
+    users[username] = password
+    print("\nהרשמה הצליחה! אנא התחבר.")
+    return sign_in()
+
+# פונקציה להצגת התפריט הראשי
+
+def display_menu():
+    print("\nברוכים הבאים לאפליקציה ללימוד אנגלית!")
+    print("1. התחבר")
+    print("2. הירשם")
+    print("3. יציאה")
+
+# פונקציה להצגת לוח המחוונים של המשתמש
+
+def display_dashboard(user):
+    print(f"\nשלום {user}, ברוך הבא ללוח המחוונים שלך!")
+    print("1. התקדמות שלך: רמה 1")  # ניתן להרחיב למערכת רמות
+    print("2. רשימת מילים שאני יודע או לא יודע")
+    print("3. התחל משחק חדש")
+    print("4. צפייה בהישגים שלי")
+    print("5. חברים ולוח תוצאות")
+    print("6. יציאה לחשבון הראשי")
+
+# פונקציה להצגת ההישגים של המשתמש
+
+def view_achievements():
+    print("\nההישגים שלך:")
+    print("1. סיימת את רמה 1!")
+    print("2. ענית נכון על 10 שאלות רצופות!")
+    # ניתן להוסיף הישגים נוספים
+
+# פונקציה להצגת חברים ולוח תוצאות
+
+def view_friends_and_leaderboard():
+    print("\nחברים ולוח תוצאות:")
+    print("1. משתמש1 - רמה 2, 150 נקודות")
+    print("2. משתמש2 - רמה 1, 120 נקודות")
+    # ניתן להוסיף חברים וניקוד נוסף
+
+# פונקציה להפעלת המשחק
+
+def play_game():
+    correct_answers = 0
+    current_level = 1
+    level_data = [level for level in levels if level["level"] == current_level][0]
+    sentences = level_data["sentences"]
+    random.shuffle(sentences)
+
+    for sentence, options, correct_answer in sentences:
+        print(f"\n{sentence}")
+        for i, option in enumerate(options):
+            print(f"{i+1}. {option}")
+        user_choice = input("בחר את התשובה הנכונה (1-4): ")
+        if options[int(user_choice) - 1] == correct_answer:
+            print("נכון! כל הכבוד!")
+            correct_answers += 1
+        else:
+            print(f"טעות. התשובה הנכונה היא '{correct_answer}'.")
+
+    print(f"\nסיימת את הרמה! ענית נכון על {correct_answers} מתוך {len(sentences)} שאלות.")
+
+# הפונקציה הראשית
+
+def main():
+    current_user = None
+
+    while current_user is None:
+        display_menu()
+        choice = input("בחרו אפשרות (1, 2 או 3): ")
+
+        if choice == "1":
+            current_user = sign_in()
+        elif choice == "2":
+            current_user = sign_up()
+        elif choice == "3":
+            print("להתראות! מקווים שנהניתם ללמוד.")
+            return
+        else:
+            print("בחירה לא תקינה, אנא נסו שוב.")
+
+    while current_user:
+        display_dashboard(current_user)
+        dashboard_choice = input("בחרו אפשרות (1-6): ")
+
+        if dashboard_choice == "1":
+            print("התקדמותך מופיעה כרגע ברמה 1. בהמשך ניתן להוסיף מערכת רמות מותאמת אישית.")
+        elif dashboard_choice == "2":
+            print("רשימת המילים מופיעה כאן. פונקציה זו תהיה מפורטת יותר בהמשך.")
+        elif dashboard_choice == "3":
+            play_game()
+        elif dashboard_choice == "4":
+            view_achievements()
+        elif dashboard_choice == "5":
+            view_friends_and_leaderboard()
+        elif dashboard_choice == "6":
+            print("יציאה מלוח המחוונים.")
+            current_user = None
+        else:
+            print("בחירה לא תקינה, אנא נסו שוב.")
+
+if __name__ == "__main__":
+    main()
